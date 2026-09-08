@@ -1,21 +1,22 @@
-# AquaGo V4
+# AquaGo V5 — Demo completa
 
-Prototipo PWA para GitHub Pages.
+Acceso demo:
+- Usuario: Valentina
+- Contraseña: Valentina
 
-## Acceso demo
-- Usuario: `Valentina`
-- Contraseña: `Valentina`
-- Roles: Cliente, Manager y Delivery
+Incluye Cliente, Manager, Delivery, AquaGo Fácil, AquaGo Familia, alertas y notificaciones, modo claro/oscuro y PWA.
 
-## Novedades V4
-- AquaGo Fácil para adultos mayores, accesible sin login.
-- Pedido habitual en un toque.
-- Pedido de agua/hielo con botones grandes.
-- Pedido por voz cuando el navegador lo soporta.
-- Solicitud de llamada.
-- AquaGo Familia dentro del perfil Cliente.
-- Un familiar puede administrar entregas de otra persona.
-- Modo claro/oscuro.
-- PWA instalable.
+## Finanzas
+- Filtros Día / Semana / Mes / rango de fechas.
+- Vendido.
+- Ingresos cobrados.
+- Egresos.
+- Flujo neto.
+- Venta proyectada.
+- Por cobrar.
+- Cuentas por pagar.
+- Empleados, proveedores, local y servicios.
+- Gráfico de ingresos vs egresos.
+- Marcar compromisos como pagados.
 
-> El login y los datos son de demostración y se guardan localmente en el navegador.
+Todos los valores son demostrativos y se almacenan localmente en el navegador.

@@ -84,6 +84,30 @@ button,input,select{font:inherit} button{cursor:pointer}
 .voice-state{font-size:14px;color:var(--muted);margin-top:10px;min-height:20px}
 @media(max-width:520px){.easy-screen{padding:12px}.easy-card{padding:19px;border-radius:22px}.easy-card h1{font-size:29px}.easy-btn{min-height:82px;font-size:18px}.easy-head .btn{padding:10px}}
 
+
+/* AquaGo V5 · Finanzas + alertas */
+.finance-toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:16px}
+.finance-toolbar .segmented{display:flex;gap:6px;background:var(--panel2);border:1px solid var(--border);padding:5px;border-radius:14px}
+.finance-toolbar .segmented button{border:0;background:transparent;color:var(--muted);padding:9px 13px;border-radius:10px;font-weight:800;cursor:pointer}
+.finance-toolbar .segmented button.active{background:var(--primary);color:#05212b}
+.date-range{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-left:auto}
+.date-range input{background:var(--panel);color:var(--text);border:1px solid var(--border);padding:9px 10px;border-radius:10px}
+.finance-chart{height:230px;display:flex;align-items:flex-end;gap:10px;padding:22px 4px 4px;border-bottom:1px solid var(--border)}
+.finance-bar-group{flex:1;display:flex;justify-content:center;align-items:flex-end;gap:5px;height:100%;position:relative}
+.finance-bar{width:min(22px,34%);border-radius:8px 8px 3px 3px;min-height:3px;background:linear-gradient(180deg,var(--primary),#5aa9ff)}
+.finance-bar.expense{background:linear-gradient(180deg,#ffab5c,#ff6b7a)}
+.finance-bar-label{position:absolute;bottom:-24px;font-size:11px;color:var(--muted);white-space:nowrap}
+.finance-legend{display:flex;gap:16px;flex-wrap:wrap;margin-top:30px;font-size:12px;color:var(--muted)}
+.finance-dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;background:var(--primary)}
+.finance-dot.expense{background:#ff8d66}
+.payable-row{display:grid;grid-template-columns:minmax(150px,1.5fr) minmax(95px,.8fr) 100px 115px auto;gap:12px;align-items:center;padding:13px 0;border-bottom:1px solid var(--border)}
+.payable-row:last-child{border-bottom:0}.payable-row small{display:block;color:var(--muted);margin-top:3px}
+.amount-strong{font-size:17px;font-weight:900}
+.alert-row{display:flex;gap:13px;align-items:flex-start;padding:14px 0;border-bottom:1px solid var(--border)}
+.alert-row:last-child{border-bottom:0}.alert-ico{width:42px;height:42px;border-radius:13px;background:var(--panel2);display:grid;place-items:center;font-size:21px;flex:none}
+.alert-body{flex:1}.alert-body strong{display:block}.alert-body small{color:var(--muted);display:block;margin-top:4px;line-height:1.4}
+@media(max-width:760px){.date-range{width:100%;margin-left:0}.date-range input{flex:1;min-width:130px}.payable-row{grid-template-columns:1fr auto}.payable-row .pay-meta{display:none}}
+
 </style>
 </head>
 <body>
@@ -159,6 +183,19 @@ const state = JSON.parse(localStorage.getItem('aquago_state')||'null') || {
   {id:'AG-1044',client:'María Gómez',zone:'Altamira',items:'3 botellones',amount:18,status:'Preparando',payment:'Pendiente',date:'08 Sep'},
   {id:'AG-1045',client:'Café Norte',zone:'La Castellana',items:'12 bolsas hielo',amount:36,status:'En ruta',payment:'Pagado',date:'08 Sep'},
  ],
+ alerts:[
+  {id:'A-001',type:'payment',title:'Pago pendiente',client:'María Gómez',detail:'Pedido AG-1044 · $18',time:'Hace 15 min',status:'Pendiente'}
+ ],
+ finance:{
+  period:'month',
+  payables:[
+   {id:'P-001',category:'Empleados',name:'Nómina repartidores',detail:'Carlos y Andrea',amount:240,due:'15 Sep',status:'Pendiente'},
+   {id:'P-002',category:'Proveedor',name:'Agua Clara C.A.',detail:'Reposición 80 botellones',amount:310,due:'12 Sep',status:'Pendiente'},
+   {id:'P-003',category:'Proveedor',name:'Hielo Polar',detail:'Suministro semanal',amount:145,due:'10 Sep',status:'Pendiente'},
+   {id:'P-004',category:'Local',name:'Alquiler del local',detail:'Septiembre',amount:450,due:'05 Sep',status:'Vencido'},
+   {id:'P-005',category:'Servicios',name:'Electricidad e internet',detail:'Local operativo',amount:92,due:'18 Sep',status:'Pendiente'}
+  ]
+ },
  deliveries:[
   {id:'D-001',client:'Juan Pérez',zone:'Chacao',items:'2 botellones',time:'9:00–11:00',status:'Pendiente'},
   {id:'D-002',client:'María Gómez',zone:'Altamira',items:'3 botellones',time:'11:00–1:00',status:'Pendiente'},
@@ -181,10 +218,10 @@ function applyTheme(){
 function toggleTheme(){state.theme=(state.theme||'dark')==='dark'?'light':'dark';save();applyTheme()}
 const navs={
  client:[['home','⌂','Inicio'],['order','＋','Pedir'],['subscription','↻','Suscripción'],['history','◷','Historial'],['family','♡','Familia']],
- manager:[['dashboard','▦','Dashboard'],['orders','≡','Pedidos'],['clients','◎','Clientes'],['routes','⌖','Rutas']],
+ manager:[['dashboard','▦','Dashboard'],['orders','≡','Pedidos'],['clients','◎','Clientes'],['routes','⌖','Rutas'],['alerts','🔔','Alertas'],['finance','＄','Finanzas']],
  delivery:[['route','⌖','Mi ruta'],['tasks','✓','Entregas'],['stock','◫','Carga'],['profile','☻','Perfil']]
 };
-const titles={home:['Hola, Mariana 👋','Tu agua llega antes de que tengas que pedirla.'],order:['Nuevo pedido','Compra puntual de agua o hielo.'],subscription:['Mi suscripción','Administra tus entregas recurrentes.'],history:['Historial','Pedidos, entregas y pagos anteriores.'],family:['AquaGo Familia','Administra entregas para quienes quieres.'],dashboard:['Centro de operaciones','Lo importante del negocio, en una sola pantalla.'],orders:['Pedidos','Gestiona el ciclo completo de cada pedido.'],clients:['Clientes','Suscripciones, pagos y próxima entrega.'],routes:['Rutas','Planifica las entregas por zona.'],route:['Ruta de hoy','4 paradas · Chacao y municipio Sucre.'],tasks:['Mis entregas','Marca cada parada a medida que avanzas.'],stock:['Carga del vehículo','Control de inventario antes de salir.'],profile:['Mi perfil','Resumen del repartidor y jornada.']};
+const titles={home:['Hola, Mariana 👋','Tu agua llega antes de que tengas que pedirla.'],order:['Nuevo pedido','Compra puntual de agua o hielo.'],subscription:['Mi suscripción','Administra tus entregas recurrentes.'],history:['Historial','Pedidos, entregas y pagos anteriores.'],family:['AquaGo Familia','Administra entregas para quienes quieres.'],dashboard:['Centro de operaciones','Lo importante del negocio, en una sola pantalla.'],orders:['Pedidos','Gestiona el ciclo completo de cada pedido.'],clients:['Clientes','Suscripciones, pagos y próxima entrega.'],routes:['Rutas','Planifica las entregas por zona.'],alerts:['Centro de alertas','Solicitudes e incidencias que requieren atención.'],finance:['Finanzas','Ventas, flujo de caja y compromisos del negocio.'],route:['Ruta de hoy','4 paradas · Chacao y municipio Sucre.'],tasks:['Mis entregas','Marca cada parada a medida que avanzas.'],stock:['Carga del vehículo','Control de inventario antes de salir.'],profile:['Mi perfil','Resumen del repartidor y jornada.']};
 function setRole(role){state.role=role;state.page=navs[role][0][0];save();render()}
 function setPage(p){state.page=p;save();render()}
 function navRender(){const list=navs[state.role];document.getElementById('desktopNav').innerHTML=list.map(x=>`<button class="${state.page===x[0]?'active':''}" onclick="setPage('${x[0]}')"><span>${x[1]}</span>${x[2]}</button>`).join('');document.getElementById('mobileNav').innerHTML=list.map(x=>`<button class="${state.page===x[0]?'active':''}" onclick="setPage('${x[0]}')"><span class="ico">${x[1]}</span>${x[2]}</button>`).join('')}
@@ -206,6 +243,61 @@ function managerDashboard(){const pending=state.orders.filter(o=>o.payment==='Pe
 function ordersPage(){return `<div class="card table-wrap"><table class="table"><thead><tr><th>Pedido</th><th>Cliente</th><th>Zona</th><th>Contenido</th><th>Pago</th><th>Estado</th></tr></thead><tbody>${state.orders.map(o=>`<tr><td>${o.id}</td><td>${o.client}</td><td>${o.zone}</td><td>${o.items}</td><td><span class="pill ${o.payment==='Pagado'?'ok':'warn'}">${o.payment}</span></td><td><span class="pill info">${o.status}</span></td></tr>`).join('')}</tbody></table></div>`}
 function clientsPage(){return `<div class="grid grid-3"><div class="card"><span class="pill ok">Activo</span><h3>Juan Pérez</h3><p class="muted">Plan Hogar · Chacao</p><p>Próxima: <b>15 Sep</b></p><button class="btn small">Ver ficha</button></div><div class="card"><span class="pill warn">Pago pendiente</span><h3>María Gómez</h3><p class="muted">Plan Familia · Altamira</p><p>Próxima: <b>Hoy</b></p><button class="btn small">Contactar</button></div><div class="card"><span class="pill info">B2B</span><h3>Café Norte</h3><p class="muted">Plan Hielo Negocio</p><p>L / M / V · 12 bolsas</p><button class="btn small">Ver ficha</button></div></div>`}
 function routesPage(){return `<div class="grid grid-2"><div class="card"><h3>Ruta Chacao · 08 Sep</h3><div class="timeline">${state.deliveries.map((d,i)=>`<div class="stop"><div class="num">${i+1}</div><div><strong>${d.client}</strong><small>${d.zone} · ${d.items}</small></div><span class="pill">${d.time}</span></div>`).join('')}</div></div><div class="card"><h3>Optimización</h3><div class="map"><div class="route-line"></div><div class="pin p1"></div><div class="pin p2"></div><div class="pin p3"></div><div class="pin p4"></div></div><div class="notice" style="margin-top:12px">🚚 Distancia estimada: 18,4 km · Tiempo: 2 h 35 min · Carga: 8 botellones + 14 hielos.</div></div></div>`}
+
+function alertsPage(){
+ const pending=(state.alerts||[]).filter(a=>a.status==='Pendiente');
+ return `<div class="grid grid-3">${cardStat('Alertas pendientes',pending.length,'Requieren atención',pending.length?'warning':'positive')}${cardStat('Solicitudes de llamada',pending.filter(a=>a.type==='call').length,'Desde AquaGo Fácil')}${cardStat('Pagos por revisar',pending.filter(a=>a.type==='payment').length,'Clientes con saldo','warning')}</div>
+ <div class="section-title"><h3>Centro de alertas</h3><span>${pending.length} pendiente(s)</span></div>
+ <div class="card">${(state.alerts||[]).map(a=>`<div class="alert-row"><div class="alert-ico">${a.type==='call'?'☎️':a.type==='payment'?'💳':'⚠️'}</div><div class="alert-body"><strong>${a.title}</strong><small>${a.client||''}${a.detail?' · '+a.detail:''}<br>${a.time||'Ahora'}</small></div><div>${a.status==='Pendiente'?`<button class="btn small primary" onclick="resolveAlert('${a.id}')">✓ Atendida</button>`:'<span class="pill ok">Atendida</span>'}</div></div>`).join('')}</div>`;
+}
+function resolveAlert(id){const a=(state.alerts||[]).find(x=>x.id===id);if(a)a.status='Atendida';save();render();}
+
+function financeMetrics(period){
+ const sets={
+  day:{sold:286,collected:248,expenses:92,projected:340,orders:18,label:'Hoy'},
+  week:{sold:1740,collected:1588,expenses:690,projected:2130,orders:104,label:'Esta semana'},
+  month:{sold:6840,collected:6215,expenses:2745,projected:8120,orders:412,label:'Este mes'},
+  custom:{sold:4210,collected:3850,expenses:1690,projected:4980,orders:251,label:'Rango seleccionado'}
+ };return sets[period]||sets.month;
+}
+function financeSeries(period){
+ const data={
+  day:[['8am',24,5],['10am',52,10],['12pm',41,14],['2pm',63,18],['4pm',58,25],['6pm',48,20]],
+  week:[['Lun',250,95],['Mar',310,120],['Mié',280,180],['Jue',340,110],['Vie',290,105],['Sáb',270,80]],
+  month:[['Sem 1',1420,610],['Sem 2',1710,720],['Sem 3',1640,655],['Sem 4',2070,760]],
+  custom:[['01-05',780,320],['06-10',990,405],['11-15',870,360],['16-20',1010,390],['21-25',560,215]]
+ };return data[period]||data.month;
+}
+function setFinancePeriod(period){state.finance=state.finance||{};state.finance.period=period;save();render();}
+function applyFinanceRange(){state.finance=state.finance||{};state.finance.period='custom';save();render();}
+function markPayable(id){const p=(state.finance?.payables||[]).find(x=>x.id===id);if(p){p.status='Pagado';save();render();}}
+
+function financePage(){
+ const period=state.finance?.period||'month',m=financeMetrics(period),profit=m.collected-m.expenses,margin=m.collected?Math.round(profit/m.collected*100):0;
+ const s=financeSeries(period),max=Math.max(...s.flatMap(x=>[x[1],x[2]]));
+ const open=(state.finance?.payables||[]).filter(p=>p.status!=='Pagado'),totalPay=open.reduce((a,p)=>a+p.amount,0);
+ return `<div class="finance-toolbar"><div class="segmented">${[['day','Día'],['week','Semana'],['month','Mes']].map(x=>`<button class="${period===x[0]?'active':''}" onclick="setFinancePeriod('${x[0]}')">${x[1]}</button>`).join('')}</div><div class="date-range"><input type="date" id="finFrom"><span class="muted">a</span><input type="date" id="finTo"><button class="btn small" onclick="applyFinanceRange()">Aplicar fechas</button></div></div>
+ <div class="grid grid-4">
+ ${cardStat('Vendido','$'+m.sold.toLocaleString(),m.orders+' pedidos · '+m.label,'positive')}
+ ${cardStat('Ingresos cobrados','$'+m.collected.toLocaleString(),Math.round(m.collected/m.sold*100)+'% de lo vendido','positive')}
+ ${cardStat('Egresos','$'+m.expenses.toLocaleString(),'Operación + compromisos','warning')}
+ ${cardStat('Flujo neto','$'+profit.toLocaleString(),margin+'% sobre cobrado',profit>=0?'positive':'warning')}
+ </div>
+ <div class="grid grid-3" style="margin-top:16px">
+ ${cardStat('Venta proyectada','$'+m.projected.toLocaleString(),'Suscripciones + pedidos previstos','positive')}
+ ${cardStat('Por cobrar','$'+(m.sold-m.collected).toLocaleString(),'Clientes con saldo pendiente','warning')}
+ ${cardStat('Cuentas por pagar','$'+totalPay.toLocaleString(),open.length+' compromisos abiertos','warning')}
+ </div>
+ <div class="grid grid-2" style="margin-top:16px">
+  <div class="card"><h3>Ingresos vs egresos</h3><p class="muted">Comportamiento del período seleccionado.</p><div class="finance-chart">${s.map(x=>`<div class="finance-bar-group"><div class="finance-bar" title="Ingresos $${x[1]}" style="height:${Math.max(4,x[1]/max*100)}%"></div><div class="finance-bar expense" title="Egresos $${x[2]}" style="height:${Math.max(4,x[2]/max*100)}%"></div><span class="finance-bar-label">${x[0]}</span></div>`).join('')}</div><div class="finance-legend"><span><i class="finance-dot"></i>Ingresos</span><span><i class="finance-dot expense"></i>Egresos</span></div></div>
+  <div class="card"><h3>Resumen de ventas</h3><div class="timeline"><div class="stop"><div class="num">💧</div><div><strong>Agua</strong><small>62% de las ventas</small></div><b>$${Math.round(m.sold*.62).toLocaleString()}</b></div><div class="stop"><div class="num">🧊</div><div><strong>Hielo</strong><small>24% de las ventas</small></div><b>$${Math.round(m.sold*.24).toLocaleString()}</b></div><div class="stop"><div class="num">↻</div><div><strong>Suscripciones</strong><small>Ingreso recurrente</small></div><b>$${Math.round(m.sold*.14).toLocaleString()}</b></div></div><div class="notice" style="margin-top:14px">Venta proyectada: <b>$${m.projected.toLocaleString()}</b></div></div>
+ </div>
+ <div class="section-title"><h3>Cuentas por pagar</h3><span>$${totalPay.toLocaleString()} pendientes</span></div>
+ <div class="card">${(state.finance?.payables||[]).map(p=>`<div class="payable-row"><div><strong>${p.name}</strong><small>${p.category} · ${p.detail}</small></div><div class="pay-meta"><span class="pill ${p.status==='Vencido'?'warn':p.status==='Pagado'?'ok':''}">${p.status}</span></div><div class="pay-meta muted">${p.due}</div><div class="amount-strong">$${p.amount}</div><div>${p.status!=='Pagado'?`<button class="btn small" onclick="markPayable('${p.id}')">Marcar pagado</button>`:'<span class="pill ok">✓ Pagado</span>'}</div></div>`).join('')}</div>
+ <div class="section-title"><h3>Compromisos por categoría</h3><span>Próximos pagos</span></div>
+ <div class="grid grid-3"><div class="card"><h3>👥 Empleados</h3><p class="muted">Nómina y repartidores.</p><div class="amount-strong">$240</div><small class="muted">Próximo pago: 15 Sep</small></div><div class="card"><h3>🏭 Proveedores</h3><p class="muted">Agua, hielo y consumibles.</p><div class="amount-strong">$455</div><small class="muted">2 pagos pendientes</small></div><div class="card"><h3>🏢 Local y servicios</h3><p class="muted">Alquiler, electricidad e internet.</p><div class="amount-strong">$542</div><small class="muted">Incluye 1 vencido</small></div></div>`;
+}
+
 function deliveryRoute(){return `<div class="card hero"><h3>Buenos días, Carlos 🚚</h3><p>Tienes 4 entregas asignadas. Antes de iniciar, confirma la carga del vehículo y comienza la ruta.</p><div class="actions"><button class="btn primary" onclick="setPage('tasks')">Iniciar ruta</button><button class="btn">Ver carga</button></div></div><div class="grid grid-2" style="margin-top:16px"><div class="card"><h3>Mapa</h3><div class="map"><div class="route-line"></div><div class="pin p1"></div><div class="pin p2"></div><div class="pin p3"></div><div class="pin p4"></div></div></div><div class="card"><h3>Próxima parada</h3><span class="pill info">09:00–11:00</span><h2>Juan Pérez</h2><p class="muted">Chacao · 2 botellones</p><div class="notice">📍 Edificio Parque Real, PB. Entregar en conserjería si el cliente no responde.</div><div class="actions"><button class="btn primary">Abrir navegación</button><button class="btn">Llamar</button></div></div></div>`}
 function tasksPage(){return `<div class="timeline">${state.deliveries.map((d,i)=>`<div class="card stop"><div class="num">${i+1}</div><div><strong>${d.client} · ${d.zone}</strong><small>${d.items} · ${d.time}</small></div><div>${d.status==='Entregado'?'<span class="pill ok">Entregado</span>':`<button class="btn small primary" onclick="completeDelivery('${d.id}')">✓ Entregar</button>`}</div></div>`).join('')}</div>`}
 function stockPage(){return `<div class="grid grid-3">${cardStat('Botellones cargados','8','Necesarios: 8','positive')}${cardStat('Bolsas de hielo','14','Necesarias: 14','positive')}${cardStat('Envases vacíos','3','Retornos estimados: 5','warning')}</div><div class="card" style="margin-top:16px"><h3>Checklist antes de salir</h3><div class="timeline"><div class="stop"><div class="num">✓</div><div><strong>Producto verificado</strong><small>Cantidad correcta según ruta</small></div><span class="pill ok">OK</span></div><div class="stop"><div class="num">✓</div><div><strong>POS / teléfonos</strong><small>Equipos con batería</small></div><span class="pill ok">OK</span></div><div class="stop"><div class="num">!</div><div><strong>Combustible</strong><small>Confirmar antes de iniciar</small></div><span class="pill warn">Revisar</span></div></div></div>`}
@@ -213,7 +305,7 @@ function profilePage(){return `<div class="grid grid-3">${cardStat('Entregas hoy
 function quickOrder(items,amount){state.orders.unshift({id:'AG-'+Math.floor(1100+Math.random()*800),client:'Mariana Graterol',zone:'Los Palos Grandes',items,amount,status:'Programado',payment:'Pendiente',date:'08 Sep'});save();alert('Producto agregado como pedido demostrativo.');}
 function createOrder(){const w=+document.getElementById('waterQty').value||0, i=+document.getElementById('iceQty').value||0;if(!w&&!i){alert('Agrega al menos un producto.');return}state.orders.unshift({id:'AG-'+Math.floor(1100+Math.random()*800),client:'Mariana Graterol',zone:'Los Palos Grandes',items:`${w} botellón(es) + ${i} hielo(s)`,amount:w*6+i*3+2,status:'Programado',payment:'Pendiente',date:'08 Sep'});save();alert('Pedido creado. Puedes verlo en Historial.');setPage('history')}
 function completeDelivery(id){const d=state.deliveries.find(x=>x.id===id);if(d)d.status='Entregado';save();render()}
-function render(){applyTheme();document.getElementById('roleSelect').value=state.role;document.getElementById('mobileRoleSelect').value=state.role;const t=titles[state.page]||['AquaGo',''];document.getElementById('pageTitle').textContent=t[0];document.getElementById('pageSubtitle').textContent=t[1];let name='Valentina',role='Cliente',av='VA';if(state.role==='manager'){name='Valentina · Admin';role='Manager';av='VA'}if(state.role==='delivery'){name='Valentina';role='Delivery';av='VA'}document.getElementById('userName').textContent=name;document.getElementById('userRole').textContent=role;document.getElementById('avatar').textContent=av;navRender();const views={home:clientHome,order:clientOrder,subscription,history,family:familyPage, dashboard:managerDashboard,orders:ordersPage,clients:clientsPage,routes:routesPage,route:deliveryRoute,tasks:tasksPage,stock:stockPage,profile:profilePage};document.getElementById('content').innerHTML=(views[state.page]||clientHome)()}
+function render(){applyTheme();document.getElementById('roleSelect').value=state.role;document.getElementById('mobileRoleSelect').value=state.role;const t=titles[state.page]||['AquaGo',''];document.getElementById('pageTitle').textContent=t[0];document.getElementById('pageSubtitle').textContent=t[1];let name='Valentina',role='Cliente',av='VA';if(state.role==='manager'){name='Valentina · Admin';role='Manager';av='VA'}if(state.role==='delivery'){name='Valentina';role='Delivery';av='VA'}document.getElementById('userName').textContent=name;document.getElementById('userRole').textContent=role;document.getElementById('avatar').textContent=av;navRender();const views={home:clientHome,order:clientOrder,subscription,history,family:familyPage, dashboard:managerDashboard,orders:ordersPage,clients:clientsPage,routes:routesPage,alerts:alertsPage,finance:financePage,route:deliveryRoute,tasks:tasksPage,stock:stockPage,profile:profilePage};document.getElementById('content').innerHTML=(views[state.page]||clientHome)()}
 
 let loginRole='client';
 function selectLoginRole(role){loginRole=role;document.querySelectorAll('.login-role').forEach(b=>b.classList.toggle('active',b.dataset.role===role));}
@@ -226,7 +318,19 @@ function openEasyMode(){document.getElementById('loginScreen').style.display='no
 function closeEasyMode(){document.getElementById('easyScreen').style.display='none';if(localStorage.getItem('aquago_logged_in')==='1'){showApp();render();}else showLogin();}
 function easyConfirm(type){const box=document.getElementById('easyConfirmBox');let body='';if(type==='habitual')body=`<h3>¿Enviamos tu pedido habitual?</h3><p>💧 <b>2 botellones</b></p><p>📍 La Florida, Caracas</p><button class="easy-btn primary" style="min-height:62px;margin-top:12px" onclick="confirmEasyOrder('2 botellones')"><span class="easy-ico">✓</span><span>SÍ, CONFIRMAR</span></button>`;if(type==='water')body=`<h3>¿Cuántos botellones?</h3><div class="actions"><button class="btn" onclick="confirmEasyOrder('1 botellón')">1</button><button class="btn primary" onclick="confirmEasyOrder('2 botellones')">2</button><button class="btn" onclick="confirmEasyOrder('3 botellones')">3</button><button class="btn" onclick="confirmEasyOrder('4 botellones')">4</button></div>`;if(type==='ice')body=`<h3>¿Cuántas bolsas de hielo?</h3><div class="actions"><button class="btn" onclick="confirmEasyOrder('1 bolsa de hielo')">1</button><button class="btn primary" onclick="confirmEasyOrder('2 bolsas de hielo')">2</button><button class="btn" onclick="confirmEasyOrder('3 bolsas de hielo')">3</button></div>`;box.innerHTML=body;box.classList.add('show');box.scrollIntoView({behavior:'smooth',block:'nearest'});}
 function confirmEasyOrder(items){state.orders.unshift({id:'AG-'+Math.floor(3000+Math.random()*800),client:'Carmen Rodríguez',zone:'La Florida',items,amount:0,status:'Programado',payment:'Por confirmar',date:'Hoy'});save();const box=document.getElementById('easyConfirmBox');box.innerHTML=`<h3>✅ ¡Listo, Carmen!</h3><p>Recibimos tu pedido de <b>${items}</b>.</p><p>AquaGo confirmará la entrega contigo.</p>`;box.classList.add('show');}
-function requestCall(){const box=document.getElementById('easyConfirmBox');box.innerHTML='<h3>☎️ Solicitud recibida</h3><p>Una persona de AquaGo te llamará para ayudarte con tu pedido.</p>';box.classList.add('show');box.scrollIntoView({behavior:'smooth',block:'nearest'});}
+function requestCall(){
+ state.alerts=state.alerts||[];
+ state.alerts.unshift({id:'A-'+Math.floor(1000+Math.random()*9000),type:'call',title:'Nueva solicitud de llamada',client:'Carmen Rodríguez',detail:'AquaGo Fácil · La Florida · Pedido habitual: 2 botellones',time:'Ahora',status:'Pendiente'});
+ save();
+ const box=document.getElementById('easyConfirmBox');box.innerHTML='<h3>☎️ Solicitud recibida</h3><p>Una persona de AquaGo te llamará para ayudarte con tu pedido.</p>';box.classList.add('show');box.scrollIntoView({behavior:'smooth',block:'nearest'});
+ showManagerNotification();
+}
+function showManagerNotification(){
+ if(!('Notification' in window)) return;
+ const fire=()=>{try{new Notification('💧 AquaGo Manager',{body:'Carmen Rodríguez solicitó una llamada desde AquaGo Fácil.',icon:'./icon-192.png'});}catch(e){}};
+ if(Notification.permission==='granted') fire();
+ else if(Notification.permission!=='denied') Notification.requestPermission().then(p=>{if(p==='granted')fire();});
+}
 function startEasyVoice(){const out=document.getElementById('voiceState');const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){out.textContent='Tu navegador no tiene reconocimiento de voz disponible. Puedes usar “Quiero que me llamen”.';return;}const r=new SR();r.lang='es-VE';r.interimResults=false;r.maxAlternatives=1;out.textContent='🎙️ Te escucho…';r.onresult=e=>{const said=e.results[0][0].transcript;out.textContent='Escuché: “'+said+'”';const m=said.match(/(\d+|un|una|dos|tres|cuatro)/i);const map={un:1,una:1,dos:2,tres:3,cuatro:4};let n=m?(map[m[1].toLowerCase()]||Number(m[1])):2;const ice=/hielo/i.test(said);confirmEasyOrder(n+' '+(ice?(n===1?'bolsa de hielo':'bolsas de hielo'):(n===1?'botellón':'botellones')));};r.onerror=()=>out.textContent='No pude escucharte bien. Intenta otra vez o pide que te llamemos.';r.start();}
 
 document.getElementById('roleSelect').addEventListener('change',e=>setRole(e.target.value));
